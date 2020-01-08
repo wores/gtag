@@ -55,7 +55,7 @@ func (g Git) GetLatestVersion() (string, error) {
 	cmdArgs := []string{"describe", "--abbrev=0"}
 	version, err := g.cmd.execGit(cmdArgs...)
 	if err != nil {
-		if version != "fatal: No names found, cannot describe anything.\n" {
+		if version != "fatal: No names found, cannot describe anything." {
 			return "", err
 		}
 
