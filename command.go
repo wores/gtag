@@ -4,6 +4,8 @@ import (
 	"log"
 	"os/exec"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type Cmd struct {
@@ -33,23 +35,25 @@ func (c *Cmd) Exec(name string, args ...string) (string, error) {
 		}
 	}()
 
-	return string(result), err
+	return string(result), errors.WithStack(err)
 }
 
 func (c *Cmd) execGit(args ...string) (string, error) {
-	git := "Git"
+	git := "git"
 	log.Println("cmd:", git, strings.Join(args, " "))
 
 	cmd := exec.Command(git, args...)
 	cmd.Dir = c.dir
 	result, err := cmd.CombinedOutput()
 
+	rest := strings.TrimRight(string(result), "\n")
+
 	defer func() {
 		c.dir = ""
 		if result != nil {
-			log.Println(string(result))
+			log.Println(rest)
 		}
 	}()
 
-	return string(result), err
+	return rest, err
 }

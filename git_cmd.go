@@ -38,8 +38,8 @@ func (g Git) TagAndPush(version string, commitHash string) error {
 }
 
 func (g Git) DeleteTag(version string) error {
-	delTagArgs := []string{"Git", "tag", "-d", version}
-	pushDelTagArgs := []string{"Git", "push", "origin", version}
+	delTagArgs := []string{"tag", "-d", version}
+	pushDelTagArgs := []string{"push", "origin", ":"+version}
 
 	_, err := g.cmd.execGit(delTagArgs...)
 	if err != nil {
@@ -55,10 +55,11 @@ func (g Git) GetLatestVersion() (string, error) {
 	cmdArgs := []string{"describe", "--abbrev=0"}
 	version, err := g.cmd.execGit(cmdArgs...)
 	if err != nil {
-		return "", err
-	}
+		if version != "fatal: No names found, cannot describe anything.\n" {
+			return "", err
+		}
 
-	if len(version) == 0 {
+		// バージョンがないので初期値をセットする
 		version = "v0.0.0"
 	}
 
@@ -88,7 +89,8 @@ func (g Git) ComputeIncrementVersion() (string, error) {
 	}
 
 	minor++
-	split[2] = string(minor)
+	split[2] = strconv.Itoa(minor)
+	fmt.Println("minor", split)
 
 	incrementVersion := strings.Join(split, ".")
 
