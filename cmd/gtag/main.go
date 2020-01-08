@@ -23,7 +23,11 @@ func main() {
 	case "d":
 		deleteCurrentTag(g)
 	default:
-		t := fmt.Sprintf("%s is not exist.", *method)
+		m := *method
+		if len(m) == 0 {
+			m = "argument"
+		}
+		t := fmt.Sprintf("%s is not exist.", m)
 		panic(t)
 	}
 
