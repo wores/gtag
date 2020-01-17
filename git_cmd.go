@@ -10,7 +10,7 @@ type Git struct {
 	cmd *Cmd
 }
 
-func New() Git {
+func newGit() Git {
 	return Git{
 		cmd: newCmd(),
 	}
@@ -83,7 +83,8 @@ func (g Git) ComputeIncrementVersion() (string, error) {
 	}
 
 	split := strings.Split(latestVersion, ".")
-	minor, err := strconv.Atoi(split[2])
+	minorStr := strings.Split(split[2], "-")[0]
+	minor, err := strconv.Atoi(minorStr)
 	if err != nil {
 		return "", err
 	}

@@ -3,25 +3,42 @@ package main
 import (
 	"flag"
 	"fmt"
+	"regexp"
 
 	"github.com/wores/gtag"
 )
 
 var (
 	method = flag.String("m", "", "i, d.")
-	//version = flag.String("v", "", "specified version tag.")
+	version = flag.String("v", "", "specified version tag.")
+
+	versionRegexp = regexp.MustCompile("^v[0-9]{1,2}.[0-9]{1,3}.[0-9]{1,5}.*")
 )
 
 func main() {
 	flag.Parse()
 
-	g := gtag.New()
+	tag := gtag.New()
+
+	if len(*version) > 0 {
+		match := versionRegexp.MatchString(*version)
+		if !match {
+			err := fmt.Errorf("specifeid version is invalid: %s", *version)
+			panic(err)
+		}
+	}
+	//fmt.Println("ok ?", a)
+	//fmt.Println("vvl", version)
+	//
+	//return
 
 	switch *method {
 	case "i":
-		addIncrementTag(g)
+		tag.AddIncrement()
 	case "d":
-		deleteCurrentTag(g)
+		tag.DeleteCurrent()
+	case "v":
+		tag.TagVersion(*version)
 	default:
 		m := *method
 		if len(m) == 0 {
@@ -32,48 +49,3 @@ func main() {
 	}
 
 }
-
-func addIncrementTag(g gtag.Git) {
-	v, err := g.ComputeIncrementVersion()
-	if err != nil {
-		panic(err)
-	}
-
-	hash, err := g.GetLatestCommitHash()
-	if err != nil {
-		panic(err)
-	}
-
-	err = g.TagAndPush(v, hash)
-	if err != nil {
-		panic(err)
-	}
-
-}
-
-func deleteCurrentTag(g gtag.Git) {
-	v, err := g.GetLatestVersion()
-	if err != nil {
-		panic(err)
-	}
-
-	err = g.DeleteTag(v)
-	if err != nil {
-		panic(err)
-	}
-
-}
-
-func tagVersion(g gtag.Git, version string) {
-	hash, err := g.GetLatestCommitHash()
-	if err != nil {
-		panic(err)
-	}
-
-	err = g.TagAndPush(version, hash)
-	if err != nil {
-		panic(err)
-	}
-
-}
-
