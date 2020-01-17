@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	method = flag.String("m", "", "i, d.")
+	method = flag.String("m", "", "i, d, v.")
 	version = flag.String("v", "", "specified version tag.")
 
 	versionRegexp = regexp.MustCompile("^v[0-9]{1,2}.[0-9]{1,3}.[0-9]{1,5}.*")
@@ -20,13 +20,6 @@ func main() {
 
 	tag := gtag.New()
 
-	if len(*version) > 0 {
-		match := versionRegexp.MatchString(*version)
-		if !match {
-			err := fmt.Errorf("specifeid version is invalid: %s", *version)
-			panic(err)
-		}
-	}
 	//fmt.Println("ok ?", a)
 	//fmt.Println("vvl", version)
 	//
@@ -38,6 +31,13 @@ func main() {
 	case "d":
 		tag.DeleteCurrent()
 	case "v":
+		if len(*version) > 0 {
+			match := versionRegexp.MatchString(*version)
+			if !match {
+				err := fmt.Errorf("specifeid version is invalid: %s", *version)
+				panic(err)
+			}
+		}
 		tag.TagVersion(*version)
 	default:
 		m := *method
