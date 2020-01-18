@@ -65,13 +65,17 @@ func (g Git) GetLatestVersion() (string, error) {
 	cmdArgs := []string{"tag"}
 	version, err := g.cmd.execGit(cmdArgs...)
 	if err != nil {
-		if version != "fatal: No names found, cannot describe anything." {
-			return "", err
-		}
+		//if version != "fatal: No names found, cannot describe anything." {
+		//	return "", err
+		//}
+		return "", err
 	}
 
 	if len(version) == 0 {
 		version = "v0.0.0"
+	} else {
+		vs := strings.Split(version, "\n")
+		version = vs[len(vs)-1]
 	}
 
 	return version, nil
@@ -102,7 +106,7 @@ func (g Git) ComputeIncrementVersion() (string, error) {
 
 	minor++
 	split[2] = strconv.Itoa(minor)
-	fmt.Println("minor", split)
+	fmt.Println("version", split)
 
 	incrementVersion := strings.Join(split, ".")
 
