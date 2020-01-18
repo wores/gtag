@@ -13,6 +13,7 @@ go get github.com/wores/gtag/cmd/gtag
 
 #### 最新のコミットでオートインクリメント
 タグが存在しなかったらv0.0.1になる
+
 パッチバージョンをインクリメントする
 ```shell script
 gtag -m i
