@@ -114,7 +114,3 @@ func (g Git) ComputeIncrementVersion() (string, error) {
 }
 
 
-//func hoge(args ...string) string {
-//	evaluateString := strings.Join(args, "\n\t")
-//	return evaluateString
-//}
