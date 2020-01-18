@@ -4,6 +4,11 @@
 
 コマンドを実行する前にpullする仕様。
 
+### インストール
+```shell script
+go get github.com/wores/gtag/cmd/gtag 
+```
+
 ## コマンド
 
 #### 最新のコミットでオートインクリメント
