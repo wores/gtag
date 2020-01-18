@@ -16,6 +16,15 @@ func newGit() Git {
 	}
 }
 
+func (g Git) Pull() error {
+	_, err := g.cmd.execGit("pull")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (g Git) TagAndPush(version string, commitHash string) error {
 	tagCmdArgs := []string{
 		"tag",
@@ -52,14 +61,16 @@ func (g Git) DeleteTag(version string) error {
 }
 
 func (g Git) GetLatestVersion() (string, error) {
-	cmdArgs := []string{"describe", "--abbrev=0"}
+	//cmdArgs := []string{"describe", "--abbrev=0"}
+	cmdArgs := []string{"tag"}
 	version, err := g.cmd.execGit(cmdArgs...)
 	if err != nil {
 		if version != "fatal: No names found, cannot describe anything." {
 			return "", err
 		}
+	}
 
-		// バージョンがないので初期値をセットする
+	if len(version) == 0 {
 		version = "v0.0.0"
 	}
 

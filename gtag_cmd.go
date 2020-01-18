@@ -9,6 +9,11 @@ func New() GTag {
 }
 
 func (gt GTag) AddIncrement() {
+	err := gt.git.Pull()
+	if err != nil {
+		panic(err)
+	}
+
 	v, err := gt.git.ComputeIncrementVersion()
 	if err != nil {
 		panic(err)
@@ -27,6 +32,11 @@ func (gt GTag) AddIncrement() {
 }
 
 func (gt GTag) DeleteCurrent() {
+	err := gt.git.Pull()
+	if err != nil {
+		panic(err)
+	}
+
 	v, err := gt.git.GetLatestVersion()
 	if err != nil {
 		panic(err)
@@ -40,6 +50,11 @@ func (gt GTag) DeleteCurrent() {
 }
 
 func (gt GTag) TagVersion(version string) {
+	err := gt.git.Pull()
+	if err != nil {
+		panic(err)
+	}
+
 	hash, err := gt.git.GetLatestCommitHash()
 	if err != nil {
 		panic(err)
