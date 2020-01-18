@@ -20,11 +20,6 @@ func main() {
 
 	tag := gtag.New()
 
-	//fmt.Println("ok ?", a)
-	//fmt.Println("vvl", version)
-	//
-	//return
-
 	switch *method {
 	case "i":
 		tag.AddIncrement()
