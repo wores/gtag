@@ -39,10 +39,13 @@ func (c *Cmd) Exec(name string, args ...string) (string, error) {
 }
 
 func (c *Cmd) execGit(args ...string) (string, error) {
-	git := "git"
-	log.Println("cmd:", git, strings.Join(args, " "))
+	cmds := []string{"git"}
+	cmds = append(cmds, args...)
+	execString := strings.Join(cmds, " ")
+	log.Println("exec: sh", execString)
 
-	cmd := exec.Command(git, args...)
+
+	cmd := exec.Command("sh", "-c", execString)
 	cmd.Dir = c.dir
 	result, err := cmd.CombinedOutput()
 

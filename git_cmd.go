@@ -70,7 +70,7 @@ func (g Git) GetLatestVersion() (string, error) {
 		//}
 		return "", err
 	}
-	//fmt.Println(version)
+	fmt.Println(version)
 
 	if len(version) == 0 {
 		version = "v0.0.0"
