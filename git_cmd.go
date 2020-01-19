@@ -62,7 +62,7 @@ func (g Git) DeleteTag(version string) error {
 
 func (g Git) GetLatestVersion() (string, error) {
 	//cmdArgs := []string{"describe", "--abbrev=0"}
-	cmdArgs := []string{"tag"}
+	cmdArgs := []string{"tag", "-l", "--sort=-v:refname", "|", "head", "-n", "30"}
 	version, err := g.cmd.execGit(cmdArgs...)
 	if err != nil {
 		//if version != "fatal: No names found, cannot describe anything." {
@@ -70,12 +70,12 @@ func (g Git) GetLatestVersion() (string, error) {
 		//}
 		return "", err
 	}
+	//fmt.Println(version)
 
 	if len(version) == 0 {
 		version = "v0.0.0"
 	} else {
-		vs := strings.Split(version, "\n")
-		version = vs[len(vs)-1]
+		version = strings.Split(version, "\n")[0]
 	}
 
 	return version, nil
