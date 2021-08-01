@@ -19,6 +19,11 @@ go get github.com/wores/gtag/cmd/gtag
 gtag -m i
 ```
 
+セマンティックバージョンのセクションを指定してインクリメントする
+```shell script
+gtag -m i -s minor
+```
+
 #### 最新のタグを削除
 ```shell script
 gtag -m d

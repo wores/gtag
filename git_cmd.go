@@ -1,9 +1,18 @@
 package gtag
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
+)
+
+type SemanticSection int
+
+const (
+	MajorSemanticSection SemanticSection = iota
+	MinorSemanticSection
+	PatchSemanticSection
 )
 
 type Git struct {
@@ -91,24 +100,58 @@ func (g Git) GetLatestCommitHash() (string, error) {
 	return hash, nil
 }
 
-func (g Git) ComputeIncrementVersion() (string, error) {
+func (g Git) ComputeIncrementVersion(s SemanticSection) (string, error) {
 	latestVersion, err := g.GetLatestVersion()
 	if err != nil {
 		return "", err
 	}
 
 	split := strings.Split(latestVersion, ".")
-	minorStr := strings.Split(split[2], "-")[0]
-	minor, err := strconv.Atoi(minorStr)
-	if err != nil {
-		return "", err
+	if len(split) != 3 {
+		return "", errors.New("not semantic version")
 	}
 
-	minor++
-	split[2] = strconv.Itoa(minor)
-	fmt.Println("version", split)
+	incrementFunc := func(sectionStr string, ss SemanticSection) (string, error) {
+		section, err := strconv.Atoi(sectionStr)
+		if err != nil {
+			return "", err
+		}
 
-	incrementVersion := strings.Join(split, ".")
+		section++
+		split[s] = strconv.Itoa(section)
+
+		incrementVersion := strings.Join(split, ".")
+		fmt.Println("version", incrementVersion)
+
+		return incrementVersion, nil
+	}
+
+	var incrementVersion string
+	switch s {
+	case MajorSemanticSection:
+		majorStr := split[s]
+		incrementVersion, err = incrementFunc(majorStr, s)
+		if err != nil {
+			return "", err
+		}
+
+	case MinorSemanticSection:
+		minorStr := split[s]
+		incrementVersion, err = incrementFunc(minorStr, s)
+		if err != nil {
+			return "", err
+		}
+
+	case PatchSemanticSection:
+		patchStr := strings.Split(split[s], "-")[0]
+		incrementVersion, err = incrementFunc(patchStr, s)
+		if err != nil {
+			return "", err
+		}
+
+	default:
+		return "", errors.New("illegal semantic section")
+	}
 
 	return incrementVersion, nil
 }

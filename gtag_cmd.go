@@ -8,13 +8,13 @@ func New() GTag {
 	return 	GTag{git: newGit()}
 }
 
-func (gt GTag) AddIncrement() {
+func (gt GTag) AddIncrement(s SemanticSection) {
 	err := gt.git.Pull()
 	if err != nil {
 		panic(err)
 	}
 
-	v, err := gt.git.ComputeIncrementVersion()
+	v, err := gt.git.ComputeIncrementVersion(s)
 	if err != nil {
 		panic(err)
 	}
