@@ -111,6 +111,9 @@ func (g Git) ComputeIncrementVersion(s SemanticSection) (string, error) {
 		return "", errors.New("not semantic version")
 	}
 
+	// 先頭のvを削除する
+	split[0] = strings.Replace(split[0], "v", "", 1)
+
 	incrementFunc := func(sectionStr string, ss SemanticSection) (string, error) {
 		section, err := strconv.Atoi(sectionStr)
 		if err != nil {
@@ -120,7 +123,7 @@ func (g Git) ComputeIncrementVersion(s SemanticSection) (string, error) {
 		section++
 		split[s] = strconv.Itoa(section)
 
-		incrementVersion := strings.Join(split, ".")
+		incrementVersion := "v" + strings.Join(split, ".")
 		fmt.Println("version", incrementVersion)
 
 		return incrementVersion, nil
@@ -130,6 +133,8 @@ func (g Git) ComputeIncrementVersion(s SemanticSection) (string, error) {
 	switch s {
 	case MajorSemanticSection:
 		majorStr := split[s]
+		split[1] = "0"
+		split[2] = "0"
 		incrementVersion, err = incrementFunc(majorStr, s)
 		if err != nil {
 			return "", err
@@ -137,6 +142,7 @@ func (g Git) ComputeIncrementVersion(s SemanticSection) (string, error) {
 
 	case MinorSemanticSection:
 		minorStr := split[s]
+		split[2] = "0"
 		incrementVersion, err = incrementFunc(minorStr, s)
 		if err != nil {
 			return "", err
