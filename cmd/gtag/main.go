@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"strings"
 
 	"github.com/wores/gtag"
 	"k8s.io/apimachinery/pkg/util/version"
@@ -34,8 +35,12 @@ func main() {
 		tag.DeleteCurrent()
 
 	case len(*specifySemanticVersion) > 0:
-		v := version.MustParseSemantic(*specifySemanticVersion)
-		tag.TagVersion(v.String())
+		if !strings.HasPrefix(*specifySemanticVersion, "v") {
+			panic("tag must be need prefix `v`")
+		}
+
+		_ = version.MustParseSemantic(*specifySemanticVersion)
+		tag.TagVersion(*specifySemanticVersion)
 
 	default:
 		log.Println("none")
