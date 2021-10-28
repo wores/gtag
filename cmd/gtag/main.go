@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"regexp"
 
@@ -40,8 +39,8 @@ func main() {
 		v := *specifySemanticVersion
 		match := versionRegexp.MatchString(v)
 		if !match {
-		    err := fmt.Errorf("specifeid version is invalid: %s", v)
-		    panic(err)
+		    log.Printf("specifeid version is invalid: %s. expeced format: [vx.x.x]\n", v)
+		    return
 		}
 
 		tag.TagVersion(v)
