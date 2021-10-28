@@ -71,7 +71,7 @@ func (g Git) DeleteTag(version string) error {
 
 func (g Git) GetLatestVersion() (string, error) {
 	//cmdArgs := []string{"describe", "--abbrev=0"}
-	cmdArgs := []string{"tag", "-l", "--sort=-v:refname", "|", "head", "-n", "30"}
+	cmdArgs := []string{"tag", "-l", "--sort=-v:refname", "|", "head", "-n", "20"}
 	version, err := g.cmd.execGit(cmdArgs...)
 	if err != nil {
 		//if version != "fatal: No names found, cannot describe anything." {

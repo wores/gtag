@@ -2,32 +2,20 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"regexp"
+	"log"
 
 	"github.com/wores/gtag"
+	"k8s.io/apimachinery/pkg/util/version"
 )
 
 var (
-	method = flag.String("m", "", "i, d, v.")
-)
+	incrementPatch = flag.Bool("ip", false, "increment patch")
 
-// タグに設定するインクリメントするセマンティックセクションを指定
-var (
-	semanticSection = flag.String("s", "patch", "increment semantic section [major, minor, patch]")
+	incrementMinor = flag.Bool("im", false, "increment minor")
 
-	semanticSectionMap = map[string]gtag.SemanticSection{
-		"major": gtag.MajorSemanticSection,
-		"minor": gtag.MinorSemanticSection,
-		"patch": gtag.PatchSemanticSection,
-	}
-)
+	deletePreviousTag = flag.Bool("d", false, "delete previous tag")
 
-// タグに設定するセマンティックバージョン
-var (
-	version = flag.String("v", "", "specified version tag.")
-
-	versionRegexp = regexp.MustCompile("^v[0-9]{1,2}.[0-9]{1,3}.[0-9]{1,5}.*")
+	specifySemanticVersion = flag.String("v", "", "specify semantic version")
 )
 
 func main() {
@@ -35,34 +23,23 @@ func main() {
 
 	tag := gtag.New()
 
-	switch *method {
-	case "i":
-		ss, ok := semanticSectionMap[*semanticSection]
-		if !ok {
-			panic(fmt.Sprintf("%s is invalid", *semanticSection))
-		}
-		tag.AddIncrement(ss)
+	switch {
+	case *incrementPatch:
+		tag.AddIncrement(gtag.PatchSemanticSection)
 
-	case "d":
+	case *incrementMinor:
+		tag.AddIncrement(gtag.MinorSemanticSection)
+
+	case *deletePreviousTag:
 		tag.DeleteCurrent()
 
-	case "v":
-		if len(*version) > 0 {
-			match := versionRegexp.MatchString(*version)
-			if !match {
-				err := fmt.Errorf("specifeid version is invalid: %s", *version)
-				panic(err)
-			}
-		}
-		tag.TagVersion(*version)
+	case len(*specifySemanticVersion) > 0:
+		v := version.MustParseSemantic(*specifySemanticVersion)
+		tag.TagVersion(v.String())
 
 	default:
-		m := *method
-		if len(m) == 0 {
-			m = "argument"
-		}
-		t := fmt.Sprintf("%s is not exist.", m)
-		panic(t)
+		log.Println("none")
+
 	}
 
 }
