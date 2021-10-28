@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
-	"strings"
+	"regexp"
 
 	"github.com/wores/gtag"
-	"k8s.io/apimachinery/pkg/util/version"
 )
 
 var (
@@ -17,6 +17,8 @@ var (
 	deletePreviousTag = flag.Bool("d", false, "delete previous tag")
 
 	specifySemanticVersion = flag.String("v", "", "specify semantic version")
+
+	versionRegexp = regexp.MustCompile("^v[0-9]{1,2}.[0-9]{1,5}.[0-9]{1,5}.*")
 )
 
 func main() {
@@ -35,12 +37,14 @@ func main() {
 		tag.DeleteCurrent()
 
 	case len(*specifySemanticVersion) > 0:
-		if !strings.HasPrefix(*specifySemanticVersion, "v") {
-			panic("tag must be need prefix `v`")
+		v := *specifySemanticVersion
+		match := versionRegexp.MatchString(v)
+		if !match {
+		    err := fmt.Errorf("specifeid version is invalid: %s", v)
+		    panic(err)
 		}
 
-		_ = version.MustParseSemantic(*specifySemanticVersion)
-		tag.TagVersion(*specifySemanticVersion)
+		tag.TagVersion(v)
 
 	default:
 		log.Println("none")
